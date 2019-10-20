@@ -39,3 +39,15 @@ class Follow(models.Model):
     def __str__(self):
         return f'{self.follower} Follow'
     
+
+class Comment(models.Model):
+    comment = models.TextField()
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, related_name='Comments', null=True, on_delete=models.CASCADE,blank=True,)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.name} Image'
+
+    class Meta:
+        ordering = ["-pk"]
