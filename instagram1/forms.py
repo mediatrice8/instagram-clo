@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm, Textarea, IntegerField
 from .models import Image, Profile, Follow
-
+from django.contrib.auth.models import User
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
@@ -18,15 +18,15 @@ class NewImageForm(forms.ModelForm):
 
 
         
-# class CommentForm(forms.ModelForm):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['comment'].widget = forms.TextInput()
-#         self.fields['comment'].widget.attrs['placeholder'] = 'Add a comment...'
+class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget = forms.TextInput()
+        self.fields['comment'].widget.attrs['placeholder'] = 'Add a comment...'
 
-#     class Meta:
-#         model = Comment
-#         fields = ('comment',)
+    class Meta:
+        model = Comment
+        fields = ('comment',)
 
 class UpdatebioForm(forms.ModelForm):
     class Meta:
