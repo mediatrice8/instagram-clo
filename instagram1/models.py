@@ -1,49 +1,74 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User
-from tinymce.models import HTMLField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-# Create your models here.
-class Image(models.Model):
-    image = models.ImageField(blank= True, null=True)
-    imageName = models.TextField()
-    image_caption = models.TextField()
-    profile = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    created_date = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return self.image_caption
-    
-    class Meta:
-        ordering = ['created_date']
-        
 class Profile(models.Model):
-    profilePhoto= models.ImageField(upload_to='profile/',null=True,blank=True)
-    bio = models.CharField(max_length=60,blank=True)
-    user = models.ForeignKey(User, related_name='Profile', null=True, on_delete=models.CASCADE,blank=True,)
-    name = models.CharField(blank=True, max_length=150)
-    # post = HTMLField()
-    def __str__(self):
-        return self.name
-    
-    @classmethod
-    def search_by_user(cls,search_term):
-        profiles = cls.objects.filter(title__icontains=search_term)
-        return profiles
-    
-    
-class Follow(models.Model):
-    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
-    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(upload_to='images/', default='default.png')
+    bio = models.TextField(max_length=500, default="My Bio", blank=True)
+    name = models.CharField(blank=True, max_length=120)
+    location = models.CharField(max_length=60, blank=True)
 
     def __str__(self):
-        return f'{self.follower} Follow'
-    
+        return f'{self.user.username} Profile'
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
+
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
+
+    def save_profile(self):
+        self.user
+
+    def delete_profile(self):
+        self.delete()
+
+    @classmethod
+    def search_profile(cls, name):
+        return cls.objects.filter(user__username__icontains=name).all()
+
+
+class Image(models.Model):
+    image = models.ImageField(upload_to='images/')
+    name = models.CharField(max_length=250, blank=True)
+    caption = models.CharField(max_length=250, blank=True)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='images')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        ordering = ["-pk"]
+
+    def get_absolute_url(self):
+        return f"/post/{self.id}"
+
+    @property
+    def get_all_comments(self):
+        return self.comments.all()
+
+    def save_image(self):
+        self.save()
+
+    def delete_image(self):
+        self.delete()
+
+    def total_likes(self):
+        return self.likes.count()
+
+    def __str__(self):
+        return f'{self.user.name} Image'
+
 
 class Comment(models.Model):
     comment = models.TextField()
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, related_name='Comments', null=True, on_delete=models.CASCADE,blank=True,)
+    # post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    # user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comments')
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
@@ -51,3 +76,11 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ["-pk"]
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
+    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
+
+    def __str__(self):
+        return f'{self.follower} Follow'
