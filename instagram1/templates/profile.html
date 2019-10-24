@@ -1,76 +1,79 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% extends "base.html" %}
 {% block content %}
-<div class="container" style="margin-top:8%">
-    <div class="content-section">
-        <div class="media">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-3">
-                        <img class="rounded-circle account-img" src="{{ user.profile.profile_picture.url }}">
-                    </div>
-                    <div class="col-md-6 mt-3">
-                        <div class="media-body">
-                            <div class="account-heading"><span class="mr-3 text-secondary username">{{ user.username }}</span>
-                                <a class="btn btn-sm btn-outline-secondary mr-3" data-toggle="modal" data-target=".bd-example-modal-md"><strong>Edit Profile</strong></a>
-                                <a class="mt-3" data-toggle="modal" data-target="#ModalCenter"><i class="fa fa-cog mt-3" id="cog"></i></a>
-                            </div>
-
-                            <div class="post-details mt-3 mb-3">
-                                <span class="mr-5"><strong>{{images.count}}</strong> Posts</span>
-                                <span class="mr-5"> <strong>{{ user.profile.followers.count }}</strong> followers</span>
-                                <span class="mr-5"> <strong>{{ user.profile.following.count }}</strong> following</span>
-                            </div>
-                            <h5>{{ user.profile.name }}</h5>
-                            <p class="text-secondary">{{ user.profile.bio }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade bd-example-modal-sm" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <a class="D-block mx-auto" href="">Change Password</a>
-                        <hr>
-                        <a class="D-block mx-auto" href="{% url 'logout' %}">Log Out</a>
-                        <hr>
-                        <a class="D-block mx-auto" href="" data-dismiss="modal">Close</a>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-md ">
-                <div class="modal-content">
-                    <form action="" method="post" novalidate enctype="multipart/form-data" class="mr-4 mt-4 ml-4 mb-4">
-                        {% csrf_token%}
-                        {{ user_form|crispy}}
-                        {{ prof_form|crispy}}
-                        <button type="submit" class="btn btn-primary btn-sm"> Update Profile</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr class="mt-4">
-    <div class="card-columns">
-        {% for image in images %}
-            <div class="card">
-                <div class="card-body">
-                    <img src="{{image.image.url}}" alt="{{image.caption}}" class="card-img">
-                    <p id="overlay"class="text"> 
-                            <i class="fas fa-heart" style="color:white; font-size: 18"></i> 
-                            <span style="color: white">{{image.likes.count}}</span>
-                             <i class="fas fa-comment ml-4" style="color: white"></i> <span style="color: white">{{image.comments.count}}</span></p>
-                    
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+{{block.super}}
+  
+<title>{{image_id.name}}</title>
+<div class="container">
+<div class="row">
+<div class="col-md-12">
+    {%for profile in profile%}
+<img src={{profile.profile_picture.url}} style="width: 300px; height: 300px; border-radius: 50%; margin-top: 100px;margin-left: 100px ">
+<div class="well" style="float: right; margin-top: 170px; margin-right: 300px">
+<div class="">
+<h5 style="float: left; margin-left: 20px; font-size: 30px; font-weight: bold; margin-top: -1px">
+    {{profile.name}}</h5>
+<i class="fa fa-gear" style="font-size:24px; float: right;  margin-left: 30px"></i>
+<a  href="{% url 'upload_profile'%}"><button class="btn btn-primary" style="background-color: #EEEEEE; color: black; float: right; margin-left: 30px; height: 30px">Edit Profile</button></a> 
+</div>
+             
+<hr>
+<div class="profile">
+<div><h4 style="float: left; margin-left: -70px">{{image_id.followers}} followers : <strong>500</h4></stong></h4></div>
+<div><h4 style="float: right;">{{image_id.following }} following : <strong>500</h4></stong></h4></div>
+<button style="margin-left: 130px; background-color:#1E88E5; width: 70px; margin-top: 10px">follow</button>
 </div>
 
+
+<ul>
+</div>
+
+<img src="{{profile.profile.url}}" class="img-responsive" alt="">
+</ul>
+<h3>{{image_id.name}}{{image_id.caption}}</h3>
+
+{%endfor%}
+<div class="col-md-6">
+<h1>{{image_id.name}}</h1>
+<a href="{{image_id.url}}" class="profile-link">{{image_id.url}}</a></div>
+</div>
+<div class="profile-images row">
+
+ 
+
+
+</div>
+</div>
+<strong style="text-align: center; font-size: 30px">Recent posts</strong>
+<div class="row" >
+	<div class="col-md-4">
+
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_OmXlEVor0bSPrK25UaK9ZW8GyAvGgXaH6JiwwsKT9LEt6ae_" style="width: 350px; height: 300px">
+</div>
+
+<div class="col-md-4">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/20031012-002-houses-st-albans.jpg/250px-20031012-002-houses-st-albans.jpg" style="width: 350px; height: 300px">
+</div>
+<div class="col-md-4" >
+<img src="https://i.ytimg.com/vi/lIm5j9uVEKw/maxresdefault.jpg" style="width: 400px; height: 300px">
+</div>
+
+</div><br>
+
+<div class="row" >
+	<div class="col-md-4">
+
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-EcfgJl7XxSmu5VwQnEGJGRT3HZsTqg4eL4xrl63Hox1h0KVs" style="width: 350px; height: 300px">
+</div>
+
+<div class="col-md-4">
+
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqBuWipylT8wojfnEUtCkCpDZGzdXRaPYZ_F4W3kjeng_jvEDF7w" style="width: 350px; height: 300px">
+</div>
+<div class="col-md-4" >
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUosn2c1wQzsoT0qKqTseQzOTAoSQvMbtax9Awn_pmcbSasUOB" style="width: 400px; height: 300px">
+</div>
+
+</div>
+</div>
 {% endblock %}
